@@ -1,21 +1,15 @@
 #!/usr/bin/env bash
-# add a 301 redirection
-sudo apt update -y
-sudo apt install nginx -y
+# redirecting to another page on nginx
 
-sudo mkdir /etc/nginx/html
-sudo touch /etc/nginx/html/index.html
-echo "Holberton School" > /etc/nginx/html/index.html
-printf %s "server {
-     listen	 80 default_server;
-     listen	 [::]:80 default_server;
-     root	 /etc/nginx/html;
-     index	 index.html index.htm;
+sudo apt-get update
+sudo apt-get install -y nginx
 
-     location /redirect_me {
-	return 301 https://www.youtube.com/watch?v=QH2-TGU1wu4;
-     }
-}
-" > /etc/nginx/sites-available/default
+echo "Holberton School" | sudo tee /var/www/html/index.html
 
-sudo service nginx restart
+# redirection config
+replacement="server_name _;\\
+    rewrite ^/redirect_me https://www.github.com/Justice00000/ permanent;"
+sudo sed -i "s|server_name _;|$replacement|" /etc/nginx/sites-available/default
+
+sudo nginx -t
+sudo service nginx start
